@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Samarqand shahrining atmosfera havosini ifloslanish geoportali</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+  <header>
+    <div class="hero">
+      <div>
+        <h1>Samarqand shahrining atmosfera havosini ifloslanish geoportali</h1>
+        <p>Havoning asosiy ifloslanish ko'rsatkichlari, yillik trendlar va joylashuv xaritasi.</p>
+      </div>
+      <div class="selectors">
+        <label>
+          Yil:
+          <select id="yearSelect"></select>
+        </label>
+        <label>
+          Gazlar:
+          <select id="pollutantSelect"></select>
+        </label>
+        <label>
+          O'lchov:
+          <select id="measureSelect">
+            <option value="Mean">O'rtacha</option>
+            <option value="Max">Maksimal</option>
+          </select>
+        </label>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="top-grid">
+      <article class="card" id="mapCard">
+        <h2>Samarqand geoxarita</h2>
+        <div id="map"></div>
+      </article>
+    </section>
+
+    <section class="charts-grid">
+      <article class="card">
+        <h2>Oylik trend</h2>
+        <canvas id="monthChart"></canvas>
+      </article>
+      <article class="card">
+        <h2>Yillar bo'yicha o'rtacha qiymat</h2>
+        <canvas id="pollutantChart"></canvas>
+      </article>
+      <article class="card">
+        <h2>Shamol yo'nalishlari</h2>
+        <canvas id="windChart"></canvas>
+      </article>
+    </section>
+
+    <section class="table-card card">
+      <h2>Oylik ma'lumotlar jadvali</h2>
+      <div class="table-scroll">
+        <table id="dataTable"></table>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Ma'lumotlar: 2016–2025 yillar. Gazlar va shamol ma'lumotlari, Samarqand geojson xarita.</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>
