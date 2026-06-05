@@ -30,6 +30,7 @@
             <option value="Max">Maksimal</option>
           </select>
         </label>
+        <button id="logoutBtn" onclick="sessionStorage.removeItem('auth');window.location.replace('login.html')">Chiqish</button>
       </div>
     </div>
   </header>
@@ -48,7 +49,7 @@
         <canvas id="monthChart"></canvas>
       </article>
       <article class="card">
-        <h2>Yillar bo'yicha o'rtacha qiymat</h2>
+        <h2>1 yillik tahlil gazlar bo'yicha</h2>
         <canvas id="pollutantChart"></canvas>
       </article>
       <article class="card">
@@ -69,6 +70,11 @@
     <p>Ma'lumotlar: 2016–2025 yillar. Gazlar va shamol ma'lumotlari, Samarqand geojson xarita.</p>
   </footer>
 
+  <script>
+    if (sessionStorage.getItem('auth') !== 'true') {
+      window.location.replace('login.html');
+    }
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="dashboard.js"></script>
 </body>
