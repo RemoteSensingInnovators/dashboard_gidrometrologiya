@@ -8,6 +8,48 @@ let dataStore = null;
 let geojson = null;
 let stationsGeojson = null;
 
+function makeTooltip(labelFn) {
+  return {
+    enabled: false,
+    external(context) {
+      const { chart, tooltip } = context;
+      let el = document.getElementById('chart-tooltip');
+      if (!el) {
+        el = document.createElement('div');
+        el.id = 'chart-tooltip';
+        document.body.appendChild(el);
+      }
+
+      if (tooltip.opacity === 0) {
+        el.style.opacity = '0';
+        return;
+      }
+
+      const item = tooltip.dataPoints?.[0];
+      if (!item) return;
+
+      const title = tooltip.title?.[0] || '';
+      const value = labelFn(item);
+
+      el.innerHTML = `
+        <div class="ct-title">${title}</div>
+        <div class="ct-value">${value}</div>
+      `;
+
+      const rect = chart.canvas.getBoundingClientRect();
+      const scrollX = window.scrollX;
+      const scrollY = window.scrollY;
+
+      let left = rect.left + scrollX + tooltip.caretX;
+      let top  = rect.top  + scrollY + tooltip.caretY - 58;
+
+      el.style.opacity = '1';
+      el.style.left = left + 'px';
+      el.style.top  = top  + 'px';
+    },
+  };
+}
+
 const GAS_NAMES = {
   SO2:   'Oltingugurt dioksid (SO₂)',
   NO2:   'Azot dioksid (NO₂)',
@@ -117,21 +159,7 @@ function buildWindChart(year) {
       responsive: true,
       plugins: {
         legend: { display: true },
-        tooltip: {
-          enabled: true,
-          backgroundColor: 'rgba(8, 18, 42, 0.96)',
-          titleColor: '#7eb8ff',
-          bodyColor: '#eef3ff',
-          borderColor: 'rgba(87,167,255,0.35)',
-          borderWidth: 1,
-          padding: 14,
-          cornerRadius: 10,
-          displayColors: false,
-          callbacks: {
-            title: (items) => items[0]?.label || '',
-            label: (ctx) => ` Tezlik: ${formatNumber(ctx.parsed.r)} m/s`,
-          },
-        },
+        tooltip: makeTooltip((item) => `${formatNumber(item.parsed.r)} m/s`),
       },
       scales: {
         r: {
@@ -183,36 +211,12 @@ function buildCharts(year, pollutant, measure) {
       responsive: true,
       interaction: { mode: 'index', intersect: false },
       plugins: {
-        legend: {
-          labels: { color: '#b5c4e6', font: { size: 12 } },
-        },
-        tooltip: {
-          enabled: true,
-          mode: 'index',
-          intersect: false,
-          backgroundColor: 'rgba(8, 18, 42, 0.96)',
-          titleColor: '#7eb8ff',
-          bodyColor: '#eef3ff',
-          borderColor: 'rgba(87,167,255,0.35)',
-          borderWidth: 1,
-          padding: 14,
-          cornerRadius: 10,
-          displayColors: false,
-          callbacks: {
-            title: (items) => items[0]?.label || '',
-            label: (ctx) => ` ${ctx.dataset.label}: ${formatNumber(ctx.parsed.y)}`,
-          },
-        },
+        legend: { labels: { color: '#b5c4e6', font: { size: 12 } } },
+        tooltip: makeTooltip((item) => formatNumber(item.parsed.y)),
       },
       scales: {
-        y: {
-          ticks: { color: '#9eb4db' },
-          grid: { color: 'rgba(255, 255, 255, 0.05)' },
-        },
-        x: {
-          ticks: { color: '#9eb4db' },
-          grid: { color: 'rgba(255, 255, 255, 0.05)' },
-        },
+        y: { ticks: { color: '#9eb4db' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+        x: { ticks: { color: '#9eb4db' }, grid: { color: 'rgba(255,255,255,0.05)' } },
       },
     },
   });
@@ -243,40 +247,14 @@ function buildCharts(year, pollutant, measure) {
       responsive: true,
       interaction: { mode: 'index', intersect: false },
       plugins: {
-        legend: {
-          labels: { color: '#b5c4e6', font: { size: 12 } },
-        },
-        tooltip: {
-          enabled: true,
-          mode: 'index',
-          intersect: false,
-          backgroundColor: 'rgba(8, 18, 42, 0.96)',
-          titleColor: '#7eb8ff',
-          bodyColor: '#eef3ff',
-          borderColor: 'rgba(87,167,255,0.35)',
-          borderWidth: 1,
-          padding: 14,
-          cornerRadius: 10,
-          displayColors: false,
-          callbacks: {
-            title: (items) => items[0]?.label || '',
-            label: (ctx) => ` ${ctx.dataset.label}: ${formatNumber(ctx.parsed.y)}`,
-          },
-        },
+        legend: { labels: { color: '#b5c4e6', font: { size: 12 } } },
+        tooltip: makeTooltip((item) => formatNumber(item.parsed.y)),
       },
       scales: {
-        y: {
-          ticks: { color: '#9eb4db' },
-          grid: { color: 'rgba(255, 255, 255, 0.05)' },
-        },
+        y: { ticks: { color: '#9eb4db' }, grid: { color: 'rgba(255,255,255,0.05)' } },
         x: {
-          ticks: {
-            color: '#9eb4db',
-            autoSkip: false,
-            maxRotation: 45,
-            minRotation: 30,
-          },
-          grid: { color: 'rgba(255, 255, 255, 0.05)' },
+          ticks: { color: '#9eb4db', autoSkip: false, maxRotation: 45, minRotation: 30 },
+          grid: { color: 'rgba(255,255,255,0.05)' },
         },
       },
     },
