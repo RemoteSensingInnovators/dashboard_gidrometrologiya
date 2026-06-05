@@ -3,8 +3,10 @@ let chartPollutant = null;
 let chartWind = null;
 let map = null;
 let geoLayer = null;
+let stationsLayer = null;
 let dataStore = null;
 let geojson = null;
+let stationsGeojson = null;
 
 const GAS_NAMES = {
   SO2:   'Oltingugurt dioksid (SO₂)',
@@ -316,6 +318,34 @@ function initMap() {
     },
   }).addTo(map);
 
+  stationsLayer = L.geoJSON(stationsGeojson, {
+    pointToLayer: function (feature, latlng) {
+      const color = feature.properties.color || '#e74c3c';
+      return L.circleMarker(latlng, {
+        radius: 10,
+        fillColor: color,
+        color: '#ffffff',
+        weight: 2,
+        opacity: 1,
+        fillOpacity: 0.9,
+      });
+    },
+    onEachFeature: function (feature, layer) {
+      const name = feature.properties.name;
+      layer.bindPopup(
+        `<div style="font-weight:bold;font-size:13px;">${name}</div>`,
+        { closeButton: true }
+      );
+      layer.bindTooltip(name, { permanent: true, direction: 'top', offset: [0, -12], className: 'station-label' });
+    },
+  }).addTo(map);
+
+  const overlays = {
+    'Stansiyalar': stationsLayer,
+    'Samarqand': geoLayer,
+  };
+  L.control.layers(null, overlays, { collapsed: false }).addTo(map);
+
   map.fitBounds(geoLayer.getBounds(), { padding: [20, 20] });
 }
 
@@ -337,17 +367,19 @@ async function loadData() {
   try {
     await loadLeafletScript();
 
-    const [dataResp, geoResp] = await Promise.all([
+    const [dataResp, geoResp, stationsResp] = await Promise.all([
       fetch('data/samarqand_data.json'),
       fetch('samarqand.json'),
+      fetch('data/stations.geojson'),
     ]);
 
-    if (!dataResp.ok || !geoResp.ok) {
+    if (!dataResp.ok || !geoResp.ok || !stationsResp.ok) {
       throw new Error('Data fayllarini yuklashda hatolik yuz berdi. Iltimos, dashboardni server orqali oching.');
     }
 
     dataStore = await dataResp.json();
     geojson = await geoResp.json();
+    stationsGeojson = await stationsResp.json();
 
     initSelectors();
     initMap();
