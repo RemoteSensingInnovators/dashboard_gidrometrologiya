@@ -304,6 +304,38 @@ footer p {
   color: #f3f6ff;
 }
 
+#chart-tooltip {
+  position: absolute;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  background: rgba(12, 22, 50, 0.96);
+  border: 1px solid rgba(87, 167, 255, 0.25);
+  border-radius: 10px;
+  padding: 10px 16px;
+  min-width: 90px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  transform: translateX(-50%);
+}
+
+#chart-tooltip .ct-title {
+  font-size: 0.72rem;
+  color: #7eb8ff;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+#chart-tooltip .ct-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.3px;
+}
+
 #logoutBtn {
   display: flex;
   align-items: center;
