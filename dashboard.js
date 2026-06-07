@@ -62,6 +62,46 @@ const GAS_NAMES = {
   Chang: 'Chang (PM)',
 };
 
+// Har bir modda uchun xarita chegarasi rangi:
+// max  → tuqroq (to'q) rang  (Maksimal ko'rsatkich uchun)
+// mean → ochroq rang         (O'rtacha ko'rsatkich uchun)
+const POLLUTANT_COLORS = {
+  SO2:   { max: '#7a4400', mean: '#d4843e' },  // to'q sariq-jigarrang → ochiq sariq-jigarrang
+  NO2:   { max: '#6b1515', mean: '#c04040' },  // to'q qizil-jigarrang → ochiq qizil
+  NH3:   { max: '#1a4a2e', mean: '#3a9a60' },  // to'q yashil → ochiq yashil
+  HF:    { max: '#3d1a5c', mean: '#8a50c8' },  // to'q binafsha → ochiq binafsha
+  NO:    { max: '#5c3300', mean: '#c07020' },  // to'q to'q sariq → ochiq sariq-to'q
+  Fenol: { max: '#5c1a3d', mean: '#c04080' },  // to'q pushti-qizil → ochiq pushti
+  CO:    { max: '#4a0000', mean: '#aa2020' },  // juda to'q qizil → qizil
+  CL:    { max: '#3a4a00', mean: '#86aa00' },  // to'q zaytun → ochiq zaytun-yashil
+  Chang: { max: '#3a2710', mean: '#8a6040' },  // to'q tuproq-jigarrang → ochiq jigarrang
+};
+
+function darkenHex(hex, amount) {
+  const factor = amount !== undefined ? amount : 0.55;
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  const toHex = (v) => Math.round(v * factor).toString(16).padStart(2, '0');
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
+function updateMapColor() {
+  if (!geoLayer) return;
+  const pollutant = document.getElementById('pollutantSelect').value;
+  const measure = document.getElementById('measureSelect').value;
+  const colors = POLLUTANT_COLORS[pollutant] || { max: '#3a2710', mean: '#8a6040' };
+  const fillColor = measure === 'Max' ? colors.max : colors.mean;
+  const borderColor = darkenHex(fillColor, 0.6);
+
+  geoLayer.setStyle({
+    color: borderColor,
+    weight: 2,
+    fillColor: fillColor,
+    fillOpacity: 0.45,
+  });
+}
+
 function gasLabel(code) {
   return GAS_NAMES[code] || code;
 }
@@ -271,6 +311,7 @@ function updateDashboard() {
   buildTable(year, measure);
   buildCharts(year, pollutant, measure);
   buildWindChart(year);
+  updateMapColor();
 }
 
 function initSelectors() {
